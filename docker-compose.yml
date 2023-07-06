@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     image: flask
     container_name: flask_aco
+    ports:
+      - 5000:5000
     networks:
       - flaskmongo_network
 
@@ -37,7 +39,8 @@ services:
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_MONGODB_ENABLE_ADMIN: true
       ME_CONFIG_MONGODB_SERVER: mongo_aco
-    
+    depends_on:
+      - mongo
     networks:
       - flaskmongo_network
 

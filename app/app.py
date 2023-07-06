@@ -73,3 +73,6 @@ def update():
     users.update_one(myquery, newvalues)
     x = "Record updated"
     return render_template("response.html", res =x)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
