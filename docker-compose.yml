@@ -1,0 +1,46 @@
+version: '3.1'
+
+services:
+  flask:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    image: flask
+    container_name: flask_aco
+    networks:
+      - flaskmongo_network
+
+  mongo:
+    image: mongo:6.0.7
+    container_name: mongo_aco
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: Str0ngUs3r
+      MONGO_INITDB_ROOT_PASSWORD: Str0ngP4ssw0rd
+    volumes:
+      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./data:/data/db
+    networks:
+      - flaskmongo_network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_exp_aco
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: Str0ngUs3r
+      ME_CONFIG_MONGODB_ADMINPASSWORD: Str0ngP4ssw0rd
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+      ME_CONFIG_MONGODB_SERVER: mongo_aco
+    
+    networks:
+      - flaskmongo_network
+
+networks:
+  flaskmongo_network:
+    driver: bridge
