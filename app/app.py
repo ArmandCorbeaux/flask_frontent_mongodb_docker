@@ -1,78 +1,92 @@
-#!/usr/bin/env python3
-from flask import Flask, render_template, request, url_for, redirect
-import subprocess as sp
+from flask import Flask, render_template, request, redirect
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from bson.objectid import ObjectId
 import os
 
-def load_stored_variables_in_env_file(VARENV:str):
-    """load variables from .env file
+load_dotenv()
 
-    Arguments:
-        VARENV -- searched env variable
+app = Flask(__name__)
 
-    Returns:
-        VARENV -- value for env variable
-    """    
-    load_dotenv()
-    return os.getenv(VARENV)
+# MongoDB connection
+mongo_host = os.getenv('MONGODB_HOST')
+mongo_port = os.getenv('MONGODB_PORT')
+mongo_username = os.getenv('MONGODB_USERNAME')
+mongo_password = os.getenv('MONGODB_PASSWORD')
+mongo_database = os.getenv('MONGODB_DATABASE')
+mongo_collection = os.getenv('MONGODB_COLLECTION')
 
-ip_mongodb = load_stored_variables_in_env_file("ip_mongodb")
-port_mongodb = load_stored_variables_in_env_file("password_mongodb")
-username_mongodb = load_stored_variables_in_env_file("user_mongodb")
-password_mongodb = load_stored_variables_in_env_file("password_mongodb")
+client = MongoClient(host=mongo_host, port=int(mongo_port),
+                     username=mongo_username, password=mongo_password)
+db = client[mongo_database]
+collection = db[mongo_collection]
 
-app = Flask("UsersManagement")
 
-client = MongoClient(ip_mongodb, port_mongodb,username=username_mongodb,password=password_mongodb)
-db = client.users_database
-users = db.users
-
-@app.route("/")
+@app.route('/')
 def index():
-    date = sp.getoutput("date /t")
-    return render_template("index.html",date=date)
+    # Get the page number from the query parameters
+    page = request.args.get('page', default=1, type=int)
 
-@app.route("/curd")
-def insert_val():
-    return render_template("curd.html")
+    # Define the number of items per page
+    items_per_page = 8
 
-@app.route("/read")
-def read():
-    cursor = users.find()
-    for record in cursor:
-        read_res = record["__id__", "first_name_db", "last_name_db", "age_db"]
-        print(record)
-    return render_template("response.html",res = read_res)
+    # Calculate the starting and ending indexes for the current page
+    start_index = (page - 1) * items_per_page
+    end_index = start_index + items_per_page
 
-@app.route("/insert")
-def insert():
-    __id__ = record["__id__"]
-    first_name_db = record["first_name_db"]
-    last_name_db = record["last_name_db"]
-    age_db = record["age_db"]
-    myVal = { "__id__": __id__, "first_name_db": first_name_db, "last_name_db":last_name_db, "age_db":age_db }
-    x = users.insert_one(myVal)
-    return render_template("response.html", res = x)
+    # Fetch all documents from the collection
+    users = list(collection.find())
 
-@app.route("/delete")
-def delete():
-    __id__ = record["__id__"]
-    myquery = { "id": __id__ }
-    users.delete_one(myquery)
-    x= "Record delete"
-    return render_template("response.html", res = x)
+    # Slice the users list to get the data for the current page
+    paginated_users = users[start_index:end_index]
 
-@app.route("/update")
-def update():
-    __id__ = request.args.get["__id__"]
-    new_first_name_db = request.args.get["first_name_db"]
-    new_last_name_db = request.args.get["last_name_db"]
-    new_age_db = request.args.get["age_db"]
-    newvalues = { "$set": {"first_name_db": new_first_name_db, "last_name_db":new_last_name_db, "age_db": new_age_db }}
-    users.update_one(myquery, newvalues)
-    x = "Record updated"
-    return render_template("response.html", res =x)
+    # Calculate the total number of pages
+    total_pages = len(users) // items_per_page + \
+        (1 if len(users) % items_per_page != 0 else 0)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    return render_template('index.html', paginated_users=paginated_users, total_pages=total_pages, current_page=page)
+
+
+@app.route('/update/<string:user_id>', methods=['POST'])
+def update(user_id):
+    # Retrieve form data
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    age = int(request.form['age'])
+
+    # Update user in the collection
+    collection.update_one({'_id': ObjectId(user_id)}, {'$set': {
+                          'first_name_db': first_name, 'last_name_db': last_name, 'age_db': age}})
+
+    # Redirect back to the current page
+    return redirect(request.referrer)
+
+
+@app.route('/delete/<string:user_id>')
+def delete(user_id):
+
+    # Delete user from the collection
+    collection.delete_one({'_id': ObjectId(user_id)})
+
+    return redirect(request.referrer)
+
+
+@app.route('/add', methods=['POST'])
+def add():
+    # Retrieve form data
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    age = int(request.form['age'])
+
+    # Insert new user into the collection
+    collection.insert_one({'first_name_db': first_name,
+                          'last_name_db': last_name, 'age_db': age})
+
+    # Calculate the total number of pages
+    total_pages = (collection.count_documents({}) - 1) // 8 + 1
+
+    return redirect(f'/?page={total_pages}')
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000, debug=True)
