@@ -1,49 +1,59 @@
 <center>
-# A simple Flask CRUD application to manage a MongoDB Database in a docker container
+
+
+<img src=./assets/screenshot.png width= 500>
+
+# A simple Flask CRUD application to manage a MongoDB database, with everything in a Docker container
+
 </center>
 
-## TO EXPLAIN :
-It was at the beginning a simple project to discover :
-- Flask CRUD functions
-- Create a Docker container with a persistent volume
-- Create a dockerfile for the flask app
 
-But I've decided to add features, as a html frontend for Flask to immedialety see the results of the CRUD operations.
 
->There's also a set of datas which are uploaded into the demo database (in the MongoDB container) to test the functionalities of the frontend.
+##Introduction
 
-I've decided to implement a UI and improve it in a KISS way :
-- **As user, I want to have immediately an overall view :** that's why the 'user database' entries are display 8 per 8
-- **As user, I want to see immediately the results of my operations :** that's why the frontend goes or stays at the right page
-- **As user, I want to understand immediately what kind of operations I can do :** that's why the UI is splitted and buttons have overlays effect
+This project was **originally a simple way to learn** about the Flask library, CRUD functions, Docker containers with persistent volumes, Dockerfiles, and Docker Compose.
+However, I **decided to add features**, such as a HTML frontend for Flask to immediately see the results of CRUD operations.
+I also **wanted to improve my knowledge in many ways**, including becoming more comfortable with the improvements to the Python environment in Debian Bookworm.
 
-## WHAT IS PERFORMED?
-- A docker container is build to host and launch the *Flask* app.
->I've decided to build a specific container based on Debian Bookworm, which is updated and where all the needed python librabries are installed in a virtual environment, then the Flask app is launched.
-- The *MongoDB* container has persistent volumes. It will create 2 folders in the folder where you launch the docker-compose : data and configdb
->At the initial launch, the demo database set is injected
-- A *mongo-express* container is launched to check the integrity of the databse after operations
--
-## HOW TO RUN IT
-**Prerequisite:**
-- Have Docker installed on your OS : [https://www.docker.com/]()
+##The UI
 
-**Clone the repository :**
+I decided to **implement a UI** and **improve it in a KISS** (Keep It Simple, Stupid) **way**.
+The goal was to provide users with an overview of the data in the database, as well as the ability to see the results of their operations immediately.
+The UI is split into two sections: a list of all the entries in the database, and a form for adding or editing entries. The buttons in the UI have overlays to indicate what they do.
+
+##The Docker containers
+
+A Docker container is **built** to host and launch the Flask app. The MongoDB container has **persistent volumes**, which means that the data in the database will be saved even if the container is stopped or restarted.
+A mongo-express container is also launched to **check the integrity** of the database after operations.
+
+##How to run it
+
+To run the application, you will need to have Docker installed on your computer.
+And that's the only requirement.
+
+Once you have Docker installed, you can clone the repository and launch the application with the following commands:
+
 ```bash
 git clone https://github.com/ArmandCorbeaux/flask_mongodb.git
-```
-
-**Launch it :**
-```bash
+#launch the project
 docker-compose up -d
 ```
+The application will be available at http://localhost:5000.
 
-**Access it with his url in your browser:**
-```
-localhost:5000
-```
+2 folders will appear in the repository, which contain MongoDB datas.
 
-## WHAT I WANT TO TEST, ADD OR IMPROVE?
-- Have a 'password' column and features of encryption
-- Change the code to manage the current version in the .env file
-- Have a cleaner code
+##What I want to add and improve
+
+I plan to add the following features and improvements to the application:
+
+- Add a 'password' column to the database and manage encryption features.
+- Change the code to manage the current version in the .env file.
+- Have a cleaner code.
+- Add comments to explain the code and the functions.
+- Improve the UI.
+
+##Conclusion
+
+This project was a great way to learn about Flask, MongoDB, Docker, and other technologies. I am excited to continue working on it and adding new features.
+
+I hope this is helpful! Let me know if you have any other questions.
