@@ -6,15 +6,15 @@ services:
       context: ./app
       dockerfile: Dockerfile
     image: flask
-    container_name: flask_aco
     ports:
       - 5000:5000
     networks:
       - flaskmongo_network
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo:6.0.7
-    container_name: mongo_aco
     restart: always
     ports:
       - 27017:27017
@@ -24,21 +24,21 @@ services:
     volumes:
       - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./data:/data/db
+      - ./configdb:/data/configdb
     networks:
       - flaskmongo_network
 
   mongo-express:
     image: mongo-express
-    container_name: mongo_exp_aco
     restart: always
     ports:
-      - 8081:8081
+      - 8082:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: Str0ngUs3r
       ME_CONFIG_MONGODB_ADMINPASSWORD: Str0ngP4ssw0rd
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-      ME_CONFIG_MONGODB_SERVER: mongo_aco
+      ME_CONFIG_MONGODB_SERVER: mongo
     depends_on:
       - mongo
     networks:
