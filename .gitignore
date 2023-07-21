@@ -1,5 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,windows,git,dotenv,flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,windows,git,dotenv,flask
+data
+configdb
+.vscode
 
 ### Flask ###
 instance/*
