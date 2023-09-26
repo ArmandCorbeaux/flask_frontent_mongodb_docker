@@ -48,13 +48,21 @@ The application will be available at http://localhost:5000.
 I plan to add the following features and improvements to the application:
 
 - Add a 'password' column to the database and manage encryption features.
-- Change the code to manage the current version in the .env file.
-- Have a cleaner code.
-- Add comments to explain the code and the functions.
-- Improve the UI.
+~~- Change the code to manage the current version in the .env file.~~
+- Have a cleaner code. # can make better
+- Add comments to explain the code and the functions. # can make better too...
+~~- Improve the UI.~~
+- Add a warning popup with a choice for the delete button
+- Add a password column and play with encryption library
+
+**1.1 :**
+- Cleaner UI / better use of the colors and non-colors
+- More close to BootStrap CSS
+- Minor changes to use .env in Dockerfile and more in docker-compose
+- More comments in all the code to explain in a better way
 
 ## Conclusion
 
 This project was a great way to learn about Flask, MongoDB, Docker, and other technologies. I am excited to continue working on it and adding new features.
 
-I hope this is helpful! Let me know if you have any other questions.
+I hope this is helpful! Let me know if you have any questions.
